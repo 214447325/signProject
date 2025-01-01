@@ -1,0 +1,14 @@
+html{
+  idth: 100%;
+  height: 100%;
+}
+
+body{
+  width: 100%;
+  height: 100% !important;
+  margin: 0;
+}
+#app {
+  width: 100%;
+  height: 100%;
+}
