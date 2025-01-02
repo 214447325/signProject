@@ -25,8 +25,6 @@ const app = express()
 
 const port = process.env.ROOT_PORT
 
-// let cors = require()
-
 app.use(express.json())
 
 app.use(morgan('combined'));
@@ -34,8 +32,8 @@ app.use(morgan('combined'));
 // @ts-ignore
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// // @ts-ignore
-// app.use(bodyParser.json({ charset: 'utf-8' }));
+// @ts-ignore
+app.use(bodyParser.json({ charset: 'utf-8' }));
 
 app.use(cors())
 

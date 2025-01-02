@@ -5,11 +5,11 @@
         <div class="constract_list">
             <template v-if="dataJson && dataJson.length > 0">
                 <template v-for="(item, index) in dataJson">
-                    <div class="item">
+                    <div class="item" @click="goInfo(item)">
                         <div class="title">{{ item.oldName }}</div>
                         <div class="status">
-                            <div class="update">修改</div>
-                            <div class="delete">删除</div>
+                            <div class="update" @click.stop="updateInfo(item)">修改</div>
+                            <div class="delete" @click.stop="deleteData(item)">删除</div>
                         </div>
                     </div>
                 </template>
@@ -21,12 +21,15 @@
 <script setup>
 import axios from "axios";
 import {onBeforeMount, ref} from "vue";
+import {useRouter} from "vue-router";
 
 const env = import.meta.env.VITE_SERVER;
 
 let dataJson = ref(null)
 
 let fileInput = ref(null)
+
+const router = useRouter()
 
 onBeforeMount(() => {
     getList()
@@ -53,11 +56,32 @@ function handleFileChange(event) {
     const formData = new FormData();
     formData.append('file', event.target.files[0]);
     axios.post(`${env}/contract/upload`, formData).then((res) => {
-        if(res.data.code == 200) {
-            // getList()
+        let data = res.data;
+        if (data.code == 200) {
+            localStorage.setItem('info', JSON.stringify(data.data))
+            router.push('/model')
         }
     })
 }
+
+function updateInfo(item) {
+    localStorage.setItem('info', JSON.stringify(item))
+    router.push('/model')
+}
+
+function deleteData(item) {
+    console.log(item)
+    axios.delete(`${env}/contract/delete?id=${item.id}&name=${item.newName}`).then((res) => {
+        getList()
+    })
+}
+
+function goInfo(item) {
+    console.log(item)
+    localStorage.setItem('detail', JSON.stringify(item))
+    router.push('/home')
+}
+
 </script>
 
 <style>
@@ -88,6 +112,7 @@ function handleFileChange(event) {
     width: 100%;
     height: 100%;
     margin-top: 10px;
+    overflow: auto;
 }
 
 .item {
@@ -105,8 +130,13 @@ function handleFileChange(event) {
 }
 
 .title {
+    width: 100%;
+    height: auto;
     font-size: 20px;
     color: #1f2328;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .status {
@@ -115,6 +145,8 @@ function handleFileChange(event) {
     display: flex;
     align-items: center;
     font-size: 14px;
+    flex-shrink: 0;
+    margin-left: 20px;
 }
 
 .update {
